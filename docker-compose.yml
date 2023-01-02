@@ -1,0 +1,43 @@
+version: '3'
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:20.0.2
+    container_name: keycloak
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data/keycloak:/opt/keycloak/data
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    command:
+      - start-dev
+  
+  openidc:
+    build: ./
+    container_name: openidc
+    ports:
+      - "80:80"
+    environment:
+      OIDC_PROVIDER_METADATA_URL: $OIDC_PROVIDER_METADATA_URL
+      OIDC_CLIENT_ID: $OIDC_CLIENT_ID
+      OIDC_CLIENT_SECRET: $OIDC_CLIENT_SECRET
+
+
+  app1:
+    build: ./app
+    container_name: app1
+    ports:
+      - 18081:18080
+    command:
+      - /opt/app
+      - app1
+
+  app2:
+    build: ./app
+    container_name: app2
+    ports:
+      - 18082:18080
+    command:
+      - /opt/app
+      - app2
